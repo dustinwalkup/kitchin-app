@@ -4,8 +4,8 @@ import { ZeroProvider } from "@rocicorp/zero/react";
 import { Zero } from "@rocicorp/zero";
 
 import "./index.css";
-import App from "./App.tsx";
-import { schema } from "../schema";
+import App from "./App";
+import { schema } from "../zero-schema.gen";
 
 const z = new Zero({
   userID: "anon",

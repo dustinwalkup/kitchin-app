@@ -55,6 +55,6 @@ export default tseslint.config({
 
 TODO:
 [x] Implement drizzle
-[ ] Implelment drizzle-zero
+[x] Implelment drizzle-zero
 [ ] Confirm all crud operations are working
 [ ] UI

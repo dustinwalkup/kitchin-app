@@ -1,27 +1,25 @@
 import "./App.css";
 import { useZero, useQuery } from "@rocicorp/zero/react";
-import type { Schema } from "../schema";
+import type { Schema } from "../zero-schema.gen";
 
 function App() {
   const z = useZero<Schema>();
-  const messages = useQuery(z.query.message);
+  const mealIngredientsList = useQuery(z.query.mealIngredients);
 
-  const addMessage = async () => {
-    const newMessage = {
-      id: `msg-${Date.now()}`,
-      body: `New message at ${new Date().toLocaleTimeString()}`,
+  const addIngredient = async () => {
+    const newIngredient = {
+      id: `ing-${Date.now()}`,
+      name: `New ingredient at ${new Date().toLocaleTimeString()}`,
     };
 
     // This will optimistically update the UI and then sync to server
-    await z.mutate.message.insert(newMessage);
+    await z.mutate.mealIngredients.insert(newIngredient);
   };
-
-  console.log("messages", messages);
 
   return (
     <>
       <div className="card">
-        <button onClick={addMessage}>click to add message </button>
+        <button onClick={addIngredient}>click to add message </button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
@@ -29,9 +27,9 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
-      {messages[0].map((message) => (
-        <div key={message.id} className="message">
-          <h2>{message.body}</h2>
+      {mealIngredientsList[0].map((ingredient) => (
+        <div key={ingredient.id} className="message">
+          <h2>{ingredient.name}</h2>
         </div>
       ))}
     </>

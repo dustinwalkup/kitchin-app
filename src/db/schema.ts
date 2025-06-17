@@ -5,3 +5,8 @@ export const mealIngredients = pgTable("meal_ingredients", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull(),
 });
+
+export const schema = {
+  mealIngredients,
+  // ... more tables
+};
