@@ -1,7 +1,7 @@
 {
-  "name": "zero-test",
+  "name": "Kitchin",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@rocicorp/zero": "^0.20.2025052100",
+    "drizzle-zero": "^0.10.8",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
