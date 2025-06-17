@@ -54,6 +54,7 @@ export default tseslint.config({
 ```
 
 TODO:
-[ ] Implement drizzle to generate migrations
+[x] Implement drizzle
+[ ] Implelment drizzle-zero
 [ ] Confirm all crud operations are working
 [ ] UI
