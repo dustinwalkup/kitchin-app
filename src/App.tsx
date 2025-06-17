@@ -1,5 +1,6 @@
-import "./App.css";
 import { useZero, useQuery } from "@rocicorp/zero/react";
+import { v4 as uuidv4 } from "uuid";
+import "./App.css";
 import type { Schema } from "../zero-schema.gen";
 
 function App() {
@@ -8,13 +9,15 @@ function App() {
 
   const addIngredient = async () => {
     const newIngredient = {
-      id: `ing-${Date.now()}`,
+      id: uuidv4(),
       name: `New ingredient at ${new Date().toLocaleTimeString()}`,
     };
 
     // This will optimistically update the UI and then sync to server
     await z.mutate.mealIngredients.insert(newIngredient);
   };
+
+  console.log("mealIngredients", mealIngredientsList);
 
   return (
     <>

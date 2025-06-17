@@ -7,13 +7,14 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "dev:zero-cache": "zero-cache-dev -p ./zero-schema-permissions.ts",
     "preview": "vite preview",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
     "generate": "drizzle-zero generate --format",
-    "postinstall": "npm generate",
+    "postinstall": "npm run generate:zero",
     "generate:zero": "tsc --project tsconfig.zero.json && drizzle-zero generate --format"
   },
   "dependencies": {
@@ -24,12 +25,14 @@
     "drizzle-zero": "^0.10.8",
     "gel": "^2.1.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.4.1",
     "drizzle-kit": "^0.31.1",
     "eslint": "^9.25.0",
