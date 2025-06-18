@@ -58,3 +58,8 @@ TODO:
 [x] Implelment drizzle-zero
 [ ] Confirm all crud operations are working
 [ ] UI
+
+FUTURE:
+
+- Week Navigation (meal-plannter.tsx)
+- Quick add item to shopping cart (grocery-list.tsx)
