@@ -56,8 +56,9 @@ export default tseslint.config({
 TODO:
 [x] Implement drizzle
 [x] Implelment drizzle-zero
-[ ] Confirm all crud operations are working
-[ ] UI
+[x] Confirm all crud operations are working
+[x] UI
+[x] basic meal planner crud
 
 FUTURE:
 
