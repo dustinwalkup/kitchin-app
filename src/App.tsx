@@ -1,33 +1,16 @@
-// import { useZero, useQuery } from "@rocicorp/zero/react";
-// import { v4 as uuidv4 } from "uuid";
-// import type { Schema } from "../zero-schema.gen";
-
-import { TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { Calendar, ShoppingCart } from "lucide-react";
+import { TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { Tabs } from "./components/ui/tabs";
 import { MealPlanner } from "./components/meal-planner";
 import { GroceryList } from "./components/grocery-list";
 
 function App() {
-  // const z = useZero<Schema>();
-  // const mealIngredientsList = useQuery(z.query.mealIngredients);
-
-  // const addIngredient = async () => {
-  //   const newIngredient = {
-  //     id: uuidv4(),
-  //     name: `New ingredient at ${new Date().toLocaleTimeString()}`,
-  //   };
-
-  //   // This will optimistically update the UI and then sync to server
-  //   await z.mutate.mealIngredients.insert(newIngredient);
-  // };
-
-  // console.log("mealIngredients", mealIngredientsList);
-
   return (
-    <main className="bg-pueblo-sand/30 mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
-      {" "}
-      <Tabs defaultValue="meals" className="w-full">
+    <main className="bg-pueblo-sand/30">
+      <Tabs
+        defaultValue="meals"
+        className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6"
+      >
         {/* Tab Navigation */}
         <TabsList className="border-sagebrush/20 mx-auto mb-6 grid w-full max-w-md grid-cols-2 rounded-xl border bg-white/80 p-1 backdrop-blur-sm">
           <TabsTrigger

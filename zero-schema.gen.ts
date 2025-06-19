@@ -26,30 +26,124 @@ type ZeroSchema = DrizzleToZeroSchema<typeof drizzleSchema>;
  */
 export const schema = {
   tables: {
-    mealIngredients: {
-      name: "mealIngredients",
+    mealPlans: {
+      name: "mealPlans",
       columns: {
         id: {
           type: "string",
           optional: true,
           customType: null as unknown as ZeroCustomType<
             ZeroSchema,
-            "mealIngredients",
+            "mealPlans",
             "id"
           >,
         },
         name: {
           type: "string",
-          optional: false,
+          optional: true,
           customType: null as unknown as ZeroCustomType<
             ZeroSchema,
-            "mealIngredients",
+            "mealPlans",
             "name"
           >,
         },
+        createdAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "mealPlans",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "mealPlans",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
       },
       primaryKey: ["id"],
-      serverName: "meal_ingredients",
+      serverName: "meal_plans",
+    },
+    meals: {
+      name: "meals",
+      columns: {
+        id: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "meals",
+            "id"
+          >,
+        },
+        mealPlanId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "meals",
+            "mealPlanId"
+          >,
+          serverName: "meal_plan_id",
+        },
+        dayOfWeek: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "meals",
+            "dayOfWeek"
+          >,
+          serverName: "day_of_week",
+        },
+        mealType: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "meals",
+            "mealType"
+          >,
+          serverName: "meal_type",
+        },
+        notes: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "meals",
+            "notes"
+          >,
+        },
+        createdAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "meals",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "meals",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
     },
   },
   relationships: {},
