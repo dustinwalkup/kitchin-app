@@ -4,6 +4,9 @@ builder = "NIXPACKS"
 [build.nixpacks]
 node-version = "20.12.2"
 
+[build.nixpacks.phases.setup]
+nixPkgs = ["python3", "gcc", "make", "pkg-config"]
+
 [deploy]
 startCommand = "npm start"
 restartPolicyType = "ON_FAILURE"
