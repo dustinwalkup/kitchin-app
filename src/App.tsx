@@ -4,6 +4,8 @@ import { GroceryList } from "./components/grocery-list";
 import { Icon } from "./components/ui/icon";
 import { cn } from "./lib/utils";
 
+const DEFAULT_TAB = "meals";
+
 const TABS = [
   {
     LABEL: "Meal Planning",
@@ -27,7 +29,7 @@ export default function App() {
   return (
     <main className="bg-pueblo-sand/30">
       <Tabs
-        defaultValue="meals"
+        defaultValue={DEFAULT_TAB}
         className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6"
       >
         {/* Tab Navigation */}
@@ -38,7 +40,9 @@ export default function App() {
               value={tab.VALUE}
               className={cn(
                 "flex items-center gap-2 rounded-lg px-4 py-2 transition-all duration-200 data-[state=active]:text-white",
-                `data-[state=active]:${tab.ACTIVE_COLOR}`,
+                tab.VALUE === DEFAULT_TAB
+                  ? "data-[state=active]:bg-accent"
+                  : "data-[state=active]:bg-cactus-flower",
               )}
             >
               <Icon name={tab.ICON} className="h-4 w-4" />
