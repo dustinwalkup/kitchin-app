@@ -26,6 +26,110 @@ type ZeroSchema = DrizzleToZeroSchema<typeof drizzleSchema>;
  */
 export const schema = {
   tables: {
+    commonGroceryItems: {
+      name: "commonGroceryItems",
+      columns: {
+        id: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "commonGroceryItems",
+            "id"
+          >,
+        },
+        category: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "commonGroceryItems",
+            "category"
+          >,
+        },
+        name: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "commonGroceryItems",
+            "name"
+          >,
+        },
+        defaultQuantity: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "commonGroceryItems",
+            "defaultQuantity"
+          >,
+          serverName: "default_quantity",
+        },
+        defaultUnit: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "commonGroceryItems",
+            "defaultUnit"
+          >,
+          serverName: "default_unit",
+        },
+        estimatedPrice: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "commonGroceryItems",
+            "estimatedPrice"
+          >,
+          serverName: "estimated_price",
+        },
+        useCount: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "commonGroceryItems",
+            "useCount"
+          >,
+          serverName: "use_count",
+        },
+        isGlobal: {
+          type: "boolean",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "commonGroceryItems",
+            "isGlobal"
+          >,
+          serverName: "is_global",
+        },
+        createdAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "commonGroceryItems",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "commonGroceryItems",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "common_grocery_items",
+    },
     mealPlans: {
       name: "mealPlans",
       columns: {
@@ -144,6 +248,232 @@ export const schema = {
         },
       },
       primaryKey: ["id"],
+    },
+    shoppingListItems: {
+      name: "shoppingListItems",
+      columns: {
+        id: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingListItems",
+            "id"
+          >,
+        },
+        shoppingListId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingListItems",
+            "shoppingListId"
+          >,
+          serverName: "shopping_list_id",
+        },
+        category: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingListItems",
+            "category"
+          >,
+        },
+        name: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingListItems",
+            "name"
+          >,
+        },
+        quantity: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingListItems",
+            "quantity"
+          >,
+        },
+        unit: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingListItems",
+            "unit"
+          >,
+        },
+        estimatedPrice: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingListItems",
+            "estimatedPrice"
+          >,
+          serverName: "estimated_price",
+        },
+        actualPrice: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingListItems",
+            "actualPrice"
+          >,
+          serverName: "actual_price",
+        },
+        notes: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingListItems",
+            "notes"
+          >,
+        },
+        isCompleted: {
+          type: "boolean",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingListItems",
+            "isCompleted"
+          >,
+          serverName: "is_completed",
+        },
+        completedAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingListItems",
+            "completedAt"
+          >,
+          serverName: "completed_at",
+        },
+        createdAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingListItems",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingListItems",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "shopping_list_items",
+    },
+    shoppingLists: {
+      name: "shoppingLists",
+      columns: {
+        id: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingLists",
+            "id"
+          >,
+        },
+        mealPlanId: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingLists",
+            "mealPlanId"
+          >,
+          serverName: "meal_plan_id",
+        },
+        name: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingLists",
+            "name"
+          >,
+        },
+        isActive: {
+          type: "boolean",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingLists",
+            "isActive"
+          >,
+          serverName: "is_active",
+        },
+        estimatedBudget: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingLists",
+            "estimatedBudget"
+          >,
+          serverName: "estimated_budget",
+        },
+        actualCost: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingLists",
+            "actualCost"
+          >,
+          serverName: "actual_cost",
+        },
+        completedAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingLists",
+            "completedAt"
+          >,
+          serverName: "completed_at",
+        },
+        createdAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingLists",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingLists",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "shopping_lists",
     },
   },
   relationships: {},
