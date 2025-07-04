@@ -1,11 +1,23 @@
-"use client";
+import { useState, useMemo } from "react";
+import { useZero, useQuery } from "@rocicorp/zero/react";
+import {} from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Plus, ShoppingCart, Grid3X3, List } from "lucide-react";
+import { Icon } from "./ui/icon";
+import type { Schema } from "../../zero-schema.gen";
+
+type CategoryKey =
+  | "produce"
+  | "meat"
+  | "dairy"
+  | "pantry"
+  | "frozen"
+  | "bakery"
+  | "other";
 
 const categories = [
   {
@@ -69,103 +81,168 @@ const commonItems = {
   other: ["Toilet paper", "Dish soap", "Toothpaste", "Paper towels"],
 };
 
-export function GroceryList() {
+export function ShoppingList() {
+  const z = useZero<Schema>();
+  const shoppingListsQuery = useQuery(z.query.shoppingLists);
+  const shoppingListItemsQuery = useQuery(z.query.shoppingListItems);
+
   const [viewMode, setViewMode] = useState<"all" | "category">("all");
   const [activeCategory, setActiveCategory] = useState("produce");
-  const [newItems, setNewItems] = useState({});
-  const [groceryItems, setGroceryItems] = useState({
-    produce: [],
-    meat: [],
-    dairy: [],
-    pantry: [],
-    frozen: [],
-    bakery: [],
-    other: [],
-  });
+  const [newItems, setNewItems] = useState<Record<string, string>>({});
 
-  const addItem = (category: string) => {
+  // Get the active shopping list (assumes one exists)
+  const activeShoppingList = useMemo(() => {
+    const lists = shoppingListsQuery[0] || [];
+    return lists.find((list) => list.isActive) || lists[0];
+  }, [shoppingListsQuery]);
+
+  // Group shopping list items by category
+  const groceryItems = useMemo(() => {
+    const items = shoppingListItemsQuery[0] || [];
+    const itemsByCategory: Record<
+      string,
+      Array<{
+        id: string;
+        name: string;
+        completed: boolean;
+        quantity: string;
+        unit: string | null;
+        notes: string | null;
+      }>
+    > = {
+      produce: [],
+      meat: [],
+      dairy: [],
+      pantry: [],
+      frozen: [],
+      bakery: [],
+      other: [],
+    };
+
+    if (activeShoppingList) {
+      const listItems = items.filter(
+        (item) => item.shoppingListId === activeShoppingList.id,
+      );
+
+      for (const item of listItems) {
+        const category = item.category as keyof typeof itemsByCategory;
+        if (itemsByCategory[category]) {
+          itemsByCategory[category].push({
+            id: item.id!,
+            name: item.name,
+            completed: item.isCompleted || false,
+            quantity: item.quantity || "1",
+            unit: item.unit,
+            notes: item.notes,
+          });
+        }
+      }
+    }
+
+    return itemsByCategory;
+  }, [shoppingListItemsQuery, activeShoppingList]);
+
+  const addItem = (category: CategoryKey) => {
     const itemName = newItems[category]?.trim();
-    if (itemName) {
-      setGroceryItems((prev) => ({
-        ...prev,
-        [category]: [
-          ...prev[category],
-          {
-            id: Date.now(),
-            name: itemName,
-            completed: false,
-            quantity: "1",
-          },
-        ],
-      }));
+    if (itemName && activeShoppingList?.id) {
+      const newItem = {
+        id: uuidv4(),
+        shoppingListId: activeShoppingList.id,
+        category: category,
+        name: itemName,
+        quantity: "1",
+        isCompleted: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      z.mutate.shoppingListItems.insert(newItem);
       setNewItems((prev) => ({ ...prev, [category]: "" }));
     }
   };
 
-  const addCommonItem = (category: string, itemName: string) => {
+  const addCommonItem = (category: CategoryKey, itemName: string) => {
+    if (!activeShoppingList?.id) return;
+
     const exists = groceryItems[category]?.some(
       (item) => item.name.toLowerCase() === itemName.toLowerCase(),
     );
 
     if (!exists) {
-      setGroceryItems((prev) => ({
-        ...prev,
-        [category]: [
-          ...prev[category],
-          {
-            id: Date.now() + Math.random(),
-            name: itemName,
-            completed: false,
-            quantity: "1",
-          },
-        ],
-      }));
+      const newItem = {
+        id: uuidv4(),
+        shoppingListId: activeShoppingList.id,
+        category: category,
+        name: itemName,
+        quantity: "1",
+        isCompleted: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      z.mutate.shoppingListItems.insert(newItem);
     }
   };
 
-  const toggleItem = (category: string, itemId: number) => {
-    setGroceryItems((prev) => ({
-      ...prev,
-      [category]: prev[category].map((item) =>
-        item.id === itemId ? { ...item, completed: !item.completed } : item,
-      ),
-    }));
+  const toggleItem = (category: string, itemId: string) => {
+    const item = shoppingListItemsQuery[0]?.find((i) => i.id === itemId);
+    if (item) {
+      z.mutate.shoppingListItems.update({
+        id: itemId,
+        isCompleted: !item.isCompleted,
+        completedAt: !item.isCompleted ? Date.now() : null,
+        updatedAt: Date.now(),
+      });
+    }
   };
 
-  const removeItem = (category: string, itemId: number) => {
-    setGroceryItems((prev) => ({
-      ...prev,
-      [category]: prev[category].filter((item) => item.id !== itemId),
-    }));
+  const removeItem = (category: string, itemId: string) => {
+    z.mutate.shoppingListItems.delete({ id: itemId });
   };
 
   const updateQuantity = (
     category: string,
-    itemId: number,
+    itemId: string,
     quantity: string,
   ) => {
-    setGroceryItems((prev) => ({
-      ...prev,
-      [category]: prev[category].map((item) =>
-        item.id === itemId ? { ...item, quantity } : item,
-      ),
-    }));
+    z.mutate.shoppingListItems.update({
+      id: itemId,
+      quantity,
+      updatedAt: Date.now(),
+    });
   };
 
   const getTotalItems = () => {
     return Object.values(groceryItems).reduce(
-      (total, items: any) => total + items.length,
+      (total, items) => total + items.length,
       0,
     );
   };
 
   const getCompletedItems = () => {
     return Object.values(groceryItems).reduce(
-      (total, items: any) =>
-        total + items.filter((item) => item.completed).length,
+      (total, items) => total + items.filter((item) => item.completed).length,
       0,
     );
   };
+
+  // Show message if no shopping list exists
+  if (!activeShoppingList) {
+    return (
+      <div className="space-y-4 sm:space-y-6">
+        <div className="border-tertiary/20 rounded-xl border bg-white p-8 text-center">
+          <Icon
+            name="ShoppingCart"
+            className="mx-auto mb-4 h-12 w-12 text-gray-400"
+          />
+          <h2 className="text-night-horizon mb-2 text-lg font-semibold">
+            No Shopping List Found
+          </h2>
+          <p className="text-night-horizon/60 text-sm">
+            Please create a shopping list first to get started.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -174,7 +251,10 @@ export function GroceryList() {
         <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3">
             <div className="bg-cactus-flower/20 flex h-10 w-10 items-center justify-center rounded-lg">
-              <ShoppingCart className="text-cactus-flower h-5 w-5" />
+              <Icon
+                name="ShoppingCart"
+                className="text-cactus-flower h-5 w-5"
+              />
             </div>
             <div>
               <h2 className="text-night-horizon text-lg font-semibold sm:text-xl">
@@ -196,7 +276,7 @@ export function GroceryList() {
                   : "text-night-horizon/60"
               }`}
             >
-              <Grid3X3 className="h-4 w-4" />
+              <Icon name="Grid3X3" className="h-4 w-4" />
               <span className="hidden sm:inline">All Categories</span>
             </button>
             <button
@@ -207,7 +287,7 @@ export function GroceryList() {
                   : "text-night-horizon/60"
               }`}
             >
-              <List className="h-4 w-4" />
+              <Icon name="List" className="h-4 w-4" />
               <span className="hidden sm:inline">By Category</span>
             </button>
           </div>
@@ -267,15 +347,17 @@ export function GroceryList() {
                       [category.key]: e.target.value,
                     }))
                   }
-                  onKeyDown={(e) => e.key === "Enter" && addItem(category.key)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && addItem(category.key as CategoryKey)
+                  }
                   className="border-tertiary/30 h-9 flex-1"
                 />
                 <Button
-                  onClick={() => addItem(category.key)}
+                  onClick={() => addItem(category.key as CategoryKey)}
                   size="sm"
                   className="bg-cactus-flower hover:bg-cactus-flower/90 h-9"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Icon name="Plus" className="h-4 w-4" />
                 </Button>
               </div>
 
@@ -285,7 +367,7 @@ export function GroceryList() {
                   Quick add:
                 </div>
                 <div className="flex flex-wrap gap-1">
-                  {commonItems[category.key]?.map((item) => {
+                  {commonItems[category.key as CategoryKey]?.map((item) => {
                     const exists = groceryItems[category.key]?.some(
                       (groceryItem) =>
                         groceryItem.name.toLowerCase() === item.toLowerCase(),
@@ -295,7 +377,9 @@ export function GroceryList() {
                         key={item}
                         variant="outline"
                         size="sm"
-                        onClick={() => addCommonItem(category.key, item)}
+                        onClick={() =>
+                          addCommonItem(category.key as CategoryKey, item)
+                        }
                         disabled={exists}
                         className={`h-7 text-xs ${exists ? "opacity-50" : "hover:bg-secondary/20 border-tertiary/30"}`}
                       >
@@ -340,7 +424,7 @@ export function GroceryList() {
                       onClick={() => removeItem(category.key, item.id)}
                       className="text-accent hover:text-accent/80 hover:bg-accent/10 h-7 w-7 p-0"
                     >
-                      <Trash2 className="h-3 w-3" />
+                      <Icon name="Trash2" className="h-3 w-3" />
                     </Button>
                   </div>
                 ))}
@@ -414,15 +498,16 @@ export function GroceryList() {
                       }))
                     }
                     onKeyDown={(e) =>
-                      e.key === "Enter" && addItem(activeCategory)
+                      e.key === "Enter" &&
+                      addItem(activeCategory as CategoryKey)
                     }
                     className="border-tertiary/30 h-10 flex-1"
                   />
                   <Button
-                    onClick={() => addItem(activeCategory)}
+                    onClick={() => addItem(activeCategory as CategoryKey)}
                     className="bg-cactus-flower hover:bg-cactus-flower/90 h-10"
                   >
-                    <Plus className="h-4 w-4" />
+                    <Icon name="Plus" className="h-4 w-4" />
                   </Button>
                 </div>
 
@@ -432,7 +517,7 @@ export function GroceryList() {
                     Quick add:
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {commonItems[activeCategory]?.map((item) => {
+                    {commonItems[activeCategory as CategoryKey]?.map((item) => {
                       const exists = groceryItems[activeCategory]?.some(
                         (groceryItem) =>
                           groceryItem.name.toLowerCase() === item.toLowerCase(),
@@ -442,7 +527,9 @@ export function GroceryList() {
                           key={item}
                           variant="outline"
                           size="sm"
-                          onClick={() => addCommonItem(activeCategory, item)}
+                          onClick={() =>
+                            addCommonItem(activeCategory as CategoryKey, item)
+                          }
                           disabled={exists}
                           className={`h-8 text-sm ${exists ? "opacity-50" : "hover:bg-secondary/20 border-tertiary/30"}`}
                         >
@@ -494,7 +581,7 @@ export function GroceryList() {
                         onClick={() => removeItem(activeCategory, item.id)}
                         className="text-accent hover:text-accent/80 hover:bg-accent/10 h-9 w-9 p-0"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Icon name="Trash2" className="h-4 w-4" />
                       </Button>
                     </div>
                   ))}
@@ -502,7 +589,10 @@ export function GroceryList() {
                   {(!groceryItems[activeCategory] ||
                     groceryItems[activeCategory].length === 0) && (
                     <div className="py-12 text-center text-gray-400">
-                      <ShoppingCart className="mx-auto mb-4 h-12 w-12 opacity-50" />
+                      <Icon
+                        name="ShoppingCart"
+                        className="mx-auto mb-4 h-12 w-12 opacity-50"
+                      />
                       <p className="text-lg">No items yet</p>
                       <p className="text-sm">Add some items to get started</p>
                     </div>

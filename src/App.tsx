@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import { MealPlanner } from "./components/meal-planner";
-import { GroceryList } from "./components/grocery-list";
+import { ShoppingList } from "./components/shopping-list";
 import { Icon } from "./components/ui/icon";
 import { cn } from "./lib/utils";
 
@@ -21,7 +21,7 @@ const TABS = [
     ICON: "ShoppingCart",
     VALUE: "shopping",
     ACTIVE_COLOR: "bg-cactus-flower",
-    CONTENT: <GroceryList />,
+    CONTENT: <ShoppingList />,
   },
 ];
 

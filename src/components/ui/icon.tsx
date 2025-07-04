@@ -1,9 +1,22 @@
-import { Calendar, ShoppingCart, ChefHat, type LucideIcon } from "lucide-react";
+import {
+  Calendar,
+  ShoppingCart,
+  ChefHat,
+  Trash2,
+  Plus,
+  Grid3X3,
+  List,
+  type LucideIcon,
+} from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
   Calendar,
   ShoppingCart,
   ChefHat,
+  Trash2,
+  Plus,
+  Grid3X3,
+  List,
 };
 
 interface IconProps {
