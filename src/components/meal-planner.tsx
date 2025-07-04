@@ -161,7 +161,6 @@ export function MealPlanner() {
   };
 
   const getMealCount = (day: DayOfWeek) => {
-    console.log("meals", meals);
     return Object.values(meals[day]).filter((meal) => meal && meal.trim())
       .length;
   };

@@ -1,6 +1,6 @@
-import { ChefHat } from "lucide-react";
+import { Icon } from "./ui/icon";
 
-const KITCHIN = "Kitchin";
+const BRAND_NAME = "Kitchin";
 
 export default function Navbar() {
   return (
@@ -9,10 +9,13 @@ export default function Navbar() {
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg sm:h-10 sm:w-10">
-              <ChefHat className="h-5 w-5 text-white sm:h-6 sm:w-6" />
+              <Icon
+                name="ChefHat"
+                className="h-5 w-5 text-white sm:h-6 sm:w-6"
+              />
             </div>
             <h1 className="text-night-horizon text-xl font-bold sm:text-2xl">
-              {KITCHIN}
+              {BRAND_NAME}
             </h1>
           </div>
         </div>
