@@ -1,24 +1,7 @@
 import { useZero } from "@rocicorp/zero/react";
 import { v4 as uuidv4 } from "uuid";
 import type { Schema } from "../../zero-schema.gen";
-
-type MealType = "breakfast" | "lunch" | "dinner";
-type DayOfWeek =
-  | "monday"
-  | "tuesday"
-  | "wednesday"
-  | "thursday"
-  | "friday"
-  | "saturday"
-  | "sunday";
-type CategoryKey =
-  | "produce"
-  | "meat"
-  | "dairy"
-  | "pantry"
-  | "frozen"
-  | "bakery"
-  | "other";
+import { type MealType, type DayOfWeek, type CategoryKey } from "@/lib/types";
 
 export function useMutations() {
   const z = useZero<Schema>();

@@ -1,26 +1,8 @@
 import { useMemo } from "react";
 import { useZero, useQuery } from "@rocicorp/zero/react";
+
 import type { Schema } from "../../zero-schema.gen";
-
-type CategoryKey =
-  | "produce"
-  | "meat"
-  | "dairy"
-  | "pantry"
-  | "frozen"
-  | "bakery"
-  | "other";
-
-type ShoppingListItem = {
-  id: string;
-  name: string;
-  completed: boolean;
-  quantity: string;
-  unit: string | null;
-  notes: string | null;
-};
-
-type ItemsByCategory = Record<CategoryKey, ShoppingListItem[]>;
+import { type CategoryKey, type ItemsByCategory } from "@/lib/types";
 
 export function useShoppingListItems(shoppingListId?: string) {
   const z = useZero<Schema>();

@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import { MealPlanner } from "./components/meal-planner";
 import { ShoppingList } from "./components/shopping-list";
+import { LABELS } from "@/lib/constants";
 import { Icon } from "./components/ui/icon";
 import { cn } from "./lib/utils";
 // import { useInitializeData } from "./hooks/use-initialize-data";
@@ -9,7 +10,7 @@ const DEFAULT_TAB = "meals";
 
 const TABS = [
   {
-    LABEL: "Meal Planning",
+    LABEL: LABELS.MEAL_PLANNING,
     SMALL_LABEL: "Meals",
     ICON: "Calendar",
     VALUE: "meals",
@@ -17,7 +18,7 @@ const TABS = [
     CONTENT: <MealPlanner />,
   },
   {
-    LABEL: "Shopping List",
+    LABEL: LABELS.SHOPPING_LIST,
     SMALL_LABEL: "Shopping",
     ICON: "ShoppingCart",
     VALUE: "shopping",
