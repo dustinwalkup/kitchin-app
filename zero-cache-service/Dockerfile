@@ -1,7 +1,7 @@
 FROM rocicorp/zero:0.21.2025062401
 
 RUN mkdir -p /data
-EXPOSE 4848
+EXPOSE 80
 
 # Add a simple health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
