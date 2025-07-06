@@ -1,4 +1,4 @@
-FROM ghcr.io/rocicorp/zero:latest
+FROM rocicorp/zero:0.21.2025070200
 
 WORKDIR /app
 
