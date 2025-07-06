@@ -90,11 +90,30 @@ export function ShoppingList() {
   const [activeCategory, setActiveCategory] = useState("produce");
   const [newItems, setNewItems] = useState<Record<string, string>>({});
 
-  // Get the active shopping list (should exist due to initialization)
+  // Get the active shopping list (creates one if none exists)
   const activeShoppingList = useMemo(() => {
     const lists = shoppingListsQuery[0] || [];
-    return lists.find((list) => list.isActive) || lists[0];
-  }, [shoppingListsQuery]);
+    let activeList = lists.find((list) => list.isActive) || lists[0];
+
+    // If no shopping list exists, create one
+    if (!activeList && lists.length === 0) {
+      const newShoppingList = {
+        id: uuidv4(),
+        name: "My Shopping List",
+        isActive: true,
+        mealPlanId: null,
+        estimatedBudget: null,
+        actualCost: null,
+        completedAt: null,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      z.mutate.shoppingLists.insert(newShoppingList);
+      activeList = newShoppingList;
+    }
+
+    return activeList;
+  }, [shoppingListsQuery, z.mutate.shoppingLists]);
 
   // Group shopping list items by category
   const groceryItems = useMemo(() => {
@@ -223,26 +242,6 @@ export function ShoppingList() {
       0,
     );
   };
-
-  // Don't render until we have a shopping list
-  if (!activeShoppingList) {
-    return (
-      <div className="space-y-4 sm:space-y-6">
-        <div className="border-tertiary/20 rounded-xl border bg-white p-8 text-center">
-          <Icon
-            name="ShoppingCart"
-            className="mx-auto mb-4 h-12 w-12 text-gray-400"
-          />
-          <h2 className="text-night-horizon mb-2 text-lg font-semibold">
-            Loading Shopping List...
-          </h2>
-          <p className="text-night-horizon/60 text-sm">
-            Please wait while we set up your shopping list.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
