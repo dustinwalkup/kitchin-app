@@ -6,6 +6,11 @@ import react from "@vitejs/plugin-react";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  preview: {
+    port: Number(process.env.PORT) || 3000,
+    host: "0.0.0.0",
+    allowedHosts: ["healthcheck.railway.app", ".railway.app", "localhost"],
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

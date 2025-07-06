@@ -4,8 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "start": "concurrently \"zero-cache-dev -p ./zero-schema-permissions.ts\" \"vite preview --port $PORT\"",
-    "start:prod": "zero-cache-dev -p ./zero-schema-permissions.ts",
+    "start": "zero-cache & sleep 10 && vite preview --port $PORT --host 0.0.0.0",
     "build": "tsc -b && vite build",
     "dev": "vite",
     "lint": "eslint .",

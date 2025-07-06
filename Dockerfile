@@ -1,6 +1,5 @@
 FROM node:20-slim
 
-# Install Python and build tools
 RUN apt-get update && apt-get install -y \
     python3 \
     build-essential \
@@ -10,23 +9,19 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copy package files first
-COPY package*.json ./
-
-# Install dependencies without running postinstall
-RUN npm ci --ignore-scripts
-
-# Copy all source files
 COPY . .
 
-# Run the zero generation manually
+RUN npm ci
+
+# Generate types and permissions
 RUN npm run generate:zero
 
-# Build the application
+# Pre-deploy permissions (so we don’t do it at runtime)
+RUN npx zero-deploy-permissions -p ./zero-schema-permissions.ts
+
+# Build production app
 RUN npm run build
 
-# Expose port
 EXPOSE $PORT
 
-# Start the application
 CMD ["npm", "start"]
