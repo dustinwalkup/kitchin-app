@@ -16,7 +16,7 @@ export function useMealPlanId() {
 
     // Fallback for edge cases
     return plans[0]?.id;
-  }, [mealPlansQuery]);
+  }, [mealPlansQuery[0]]); // Use the specific array instead of the entire query object
 
   return mealPlanId;
 }

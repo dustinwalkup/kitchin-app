@@ -4,17 +4,15 @@ import { useZero, useQuery } from "@rocicorp/zero/react";
 import type { Schema } from "../../zero-schema.gen";
 import { type CategoryKey, type ItemsByCategory } from "@/lib/types";
 
-export function useShoppingListItems(shoppingListId?: string) {
+export function useShoppingListItems() {
   const z = useZero<Schema>();
   const shoppingListItemsQuery = useQuery(z.query.shoppingListItems);
 
-  // Filter items for the specific shopping list
-  const filteredItems = useMemo(() => {
-    const items = shoppingListItemsQuery[0] || [];
-    if (!shoppingListId) return [];
-
-    return items.filter((item) => item.shoppingListId === shoppingListId);
-  }, [shoppingListItemsQuery[0], shoppingListId]);
+  // Zero handles user isolation through permissions
+  // No need to filter by user here
+  const items = useMemo(() => {
+    return shoppingListItemsQuery[0] || [];
+  }, [shoppingListItemsQuery[0]]);
 
   // Group items by category
   const itemsByCategory = useMemo<ItemsByCategory>(() => {
@@ -28,7 +26,7 @@ export function useShoppingListItems(shoppingListId?: string) {
       other: [],
     };
 
-    for (const item of filteredItems) {
+    for (const item of items) {
       const category = item.category as CategoryKey;
       if (itemsByCategory[category]) {
         itemsByCategory[category].push({
@@ -43,15 +41,15 @@ export function useShoppingListItems(shoppingListId?: string) {
     }
 
     return itemsByCategory;
-  }, [filteredItems]);
+  }, [items]);
 
   const rawItems = shoppingListItemsQuery[0] || [];
 
   return {
     itemsByCategory,
-    filteredItems,
+    items,
     rawItems,
-    totalItems: filteredItems.length,
-    completedItems: filteredItems.filter((item) => item.isCompleted).length,
+    totalItems: items.length,
+    completedItems: items.filter((item) => item.isCompleted).length,
   };
 }

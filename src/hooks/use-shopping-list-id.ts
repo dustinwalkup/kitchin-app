@@ -17,7 +17,7 @@ export function useShoppingListId() {
     // Fallback for edge cases
     const activeList = lists.find((list) => list.isActive) || lists[0];
     return activeList?.id;
-  }, [shoppingListsQuery]);
+  }, [shoppingListsQuery[0]]); // Use the specific array instead of the entire query object
 
   return shoppingListId;
 }

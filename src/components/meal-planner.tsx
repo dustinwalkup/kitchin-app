@@ -1,7 +1,6 @@
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 
-import { useMealPlanId } from "@/hooks/use-meal-plan-id";
 import { useMeals } from "@/hooks/use-meals";
 import { useMutations } from "@/hooks/use-mutations";
 
@@ -9,8 +8,7 @@ import { DAYS, MEAL_TYPES, LABELS } from "@/lib/constants";
 import { type DayOfWeek, type MealType } from "@/lib/types";
 
 export function MealPlanner() {
-  const mealPlanId = useMealPlanId();
-  const { meals, rawMeals } = useMeals(mealPlanId || undefined);
+  const { meals, rawMeals } = useMeals();
   const { updateMeal, createMeal } = useMutations();
 
   const handleMealChange = (day: string, type: string, notes: string) => {
@@ -21,6 +19,8 @@ export function MealPlanner() {
     if (existingMeal) {
       updateMeal(existingMeal.id!, notes);
     } else {
+      // Get the meal plan ID from the first meal (since there's only one meal plan)
+      const mealPlanId = rawMeals[0]?.mealPlanId;
       if (!mealPlanId) {
         console.error("No meal plan found. Please refresh the page.");
         return;
@@ -49,7 +49,7 @@ export function MealPlanner() {
         {DAYS.map((day) => (
           <div
             key={day.key}
-            className={`rounded-xl border-l-4 bg-white ${day.color} border-secondary/20 border-t border-r border-b p-4 sm:p-6`}
+            className={`rounded-xl border-l-4 bg-white ${day.color} border-secondary/20 border-b border-r border-t p-4 sm:p-6`}
           >
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-night-horizon text-lg font-semibold">

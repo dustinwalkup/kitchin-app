@@ -14,7 +14,7 @@ type DayOfWeek =
 
 type MealsMap = Record<DayOfWeek, Record<MealType, string>>;
 
-export function useMeals(mealPlanId?: string) {
+export function useMeals() {
   const z = useZero<Schema>();
   const mealsQuery = useQuery(z.query.meals);
 
@@ -31,19 +31,16 @@ export function useMeals(mealPlanId?: string) {
 
     const meals = mealsQuery[0] || [];
 
-    // Filter by meal plan if provided
-    const filteredMeals = mealPlanId
-      ? meals.filter((meal) => meal.mealPlanId === mealPlanId)
-      : meals;
-
-    for (const meal of filteredMeals) {
+    // Zero handles user isolation through permissions
+    // No need to filter by user here
+    for (const meal of meals) {
       const day = meal.dayOfWeek as DayOfWeek;
       const type = meal.mealType as MealType;
       map[day][type] = meal.notes ?? "";
     }
 
     return map;
-  }, [mealsQuery, mealPlanId]);
+  }, [mealsQuery[0]]);
 
   const rawMeals = mealsQuery[0] || [];
 

@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-import { useShoppingListId } from "@/hooks/use-shopping-list-id";
 import { useShoppingListItems } from "@/hooks/use-shopping-list-items";
 
 import { CATEGORIES, LABELS } from "@/lib/constants";
@@ -15,12 +14,11 @@ import { ShoppingListItemComponent } from "./shopping-list-item";
 import { EmptyState } from "./empty-state";
 
 export function ShoppingList() {
-  const shoppingListId = useShoppingListId();
   const {
     itemsByCategory: groceryItems,
     totalItems,
     completedItems,
-  } = useShoppingListItems(shoppingListId || undefined);
+  } = useShoppingListItems();
 
   const [viewMode, setViewMode] = useState<ShoppingListViewMode>("list");
   const [activeCategory, setActiveCategory] = useState<CategoryKey>("produce");
