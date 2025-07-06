@@ -59,6 +59,7 @@ TODO:
 [x] Confirm all crud operations are working
 [x] UI
 [x] basic meal planner crud
+[ ] shopping list crud
 
 FUTURE:
 
