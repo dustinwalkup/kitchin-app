@@ -11,6 +11,7 @@ interface ShoppingListCategoryProps {
   items: ItemsByCategory[CategoryKey];
   newItemValue: string;
   onNewItemChange: (value: string) => void;
+  shoppingListId?: string;
 }
 
 export function ShoppingListCategory({
@@ -18,6 +19,7 @@ export function ShoppingListCategory({
   items,
   newItemValue,
   onNewItemChange,
+  shoppingListId,
 }: ShoppingListCategoryProps) {
   const categoryInfo = CATEGORIES.find((c) => c.key === category);
   const remainingItems = items.filter((item) => !item.completed).length;
@@ -51,6 +53,7 @@ export function ShoppingListCategory({
           value={newItemValue}
           onChange={onNewItemChange}
           placeholder={`${LABELS.ADD_TO} ${categoryInfo.label}...`}
+          shoppingListId={shoppingListId}
         />
       </div>
 
@@ -58,6 +61,7 @@ export function ShoppingListCategory({
       <ShoppingListQuickAdd
         category={category}
         existingItems={existingItemNames}
+        shoppingListId={shoppingListId}
       />
 
       {/* Items */}

@@ -18,7 +18,11 @@ export function ShoppingList() {
     itemsByCategory: groceryItems,
     totalItems,
     completedItems,
+    items,
   } = useShoppingListItems();
+
+  // Get shopping list ID from the first item (since there's only one shopping list)
+  const shoppingListId = items[0]?.shoppingListId;
 
   const [viewMode, setViewMode] = useState<ShoppingListViewMode>("list");
   const [activeCategory, setActiveCategory] = useState<CategoryKey>("produce");
@@ -40,6 +44,7 @@ export function ShoppingList() {
           items={groceryItems[category.key] || []}
           newItemValue={newItems[category.key] || ""}
           onNewItemChange={(value) => handleNewItemChange(category.key, value)}
+          shoppingListId={shoppingListId}
         />
       ))}
     </div>
@@ -82,6 +87,7 @@ export function ShoppingList() {
               onChange={(value) => handleNewItemChange(activeCategory, value)}
               placeholder={`${LABELS.ADD_TO} ${category.label}...`}
               variant="large"
+              shoppingListId={shoppingListId}
             />
           </div>
 
@@ -90,6 +96,7 @@ export function ShoppingList() {
             category={activeCategory}
             existingItems={existingItemNames}
             variant="large"
+            shoppingListId={shoppingListId}
           />
 
           {/* Items List */}

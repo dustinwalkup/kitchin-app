@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { useShoppingListItems } from "@/hooks/use-shopping-list-items";
 import { useMutations } from "@/hooks/use-mutations";
 import { type CategoryKey } from "@/lib/types";
 import { COMMON_ITEMS, LABELS } from "@/lib/constants";
@@ -8,21 +7,20 @@ interface ShoppingListQuickAddProps {
   category: CategoryKey;
   existingItems: string[];
   variant?: "compact" | "large";
+  shoppingListId?: string;
 }
 
 export function ShoppingListQuickAdd({
   category,
   existingItems,
   variant = "compact",
+  shoppingListId,
 }: ShoppingListQuickAddProps) {
-  const { items } = useShoppingListItems();
   const { createShoppingListItem } = useMutations();
   const isLarge = variant === "large";
   const commonItems = COMMON_ITEMS[category] || [];
 
   const handleAddItem = (itemName: string) => {
-    // Get shopping list ID from the first item (since there's only one shopping list)
-    const shoppingListId = items[0]?.shoppingListId;
     if (!shoppingListId) return;
     createShoppingListItem(shoppingListId, category, itemName);
   };

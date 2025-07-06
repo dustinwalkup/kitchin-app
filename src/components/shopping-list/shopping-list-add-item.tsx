@@ -1,7 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
-import { useShoppingListItems } from "@/hooks/use-shopping-list-items";
 import { useMutations } from "@/hooks/use-mutations";
 import { type CategoryKey } from "@/lib/types";
 import { LABELS } from "@/lib/constants";
@@ -12,6 +11,7 @@ interface ShoppingListAddItemProps {
   onChange: (value: string) => void;
   placeholder?: string;
   variant?: "compact" | "large";
+  shoppingListId?: string;
 }
 
 export function ShoppingListAddItem({
@@ -20,15 +20,13 @@ export function ShoppingListAddItem({
   onChange,
   placeholder,
   variant = "compact",
+  shoppingListId,
 }: ShoppingListAddItemProps) {
-  const { items } = useShoppingListItems();
   const { createShoppingListItem } = useMutations();
   const isLarge = variant === "large";
 
   const handleAdd = () => {
     const itemName = value.trim();
-    // Get shopping list ID from the first item (since there's only one shopping list)
-    const shoppingListId = items[0]?.shoppingListId;
     if (!itemName || !shoppingListId) return;
 
     createShoppingListItem(shoppingListId, category, itemName);
