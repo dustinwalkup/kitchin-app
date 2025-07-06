@@ -10,7 +10,7 @@ import Navbar from "./components/navbar";
 
 const z = new Zero({
   userID: "anon",
-  server: "http://localhost:4848",
+  server: import.meta.env.VITE_ZERO_SERVER_URL || "http://localhost:4848",
   schema,
 });
 
