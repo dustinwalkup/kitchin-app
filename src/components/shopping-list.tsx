@@ -90,30 +90,11 @@ export function ShoppingList() {
   const [activeCategory, setActiveCategory] = useState("produce");
   const [newItems, setNewItems] = useState<Record<string, string>>({});
 
-  // Get the active shopping list (creates one if none exists)
+  // Get the active shopping list (assumes one exists due to initialization)
   const activeShoppingList = useMemo(() => {
     const lists = shoppingListsQuery[0] || [];
-    let activeList = lists.find((list) => list.isActive) || lists[0];
-
-    // If no shopping list exists, create one
-    if (!activeList && lists.length === 0) {
-      const newShoppingList = {
-        id: uuidv4(),
-        name: "My Shopping List",
-        isActive: true,
-        mealPlanId: null,
-        estimatedBudget: null,
-        actualCost: null,
-        completedAt: null,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      };
-      z.mutate.shoppingLists.insert(newShoppingList);
-      activeList = newShoppingList;
-    }
-
-    return activeList;
-  }, [shoppingListsQuery, z.mutate.shoppingLists]);
+    return lists.find((list) => list.isActive) || lists[0];
+  }, [shoppingListsQuery]);
 
   // Group shopping list items by category
   const groceryItems = useMemo(() => {

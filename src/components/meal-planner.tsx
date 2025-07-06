@@ -148,26 +148,16 @@ export function MealPlanner() {
     if (existingMeal) {
       z.mutate.meals.update({ id: existingMeal.id, notes });
     } else {
-      // Get or create a meal plan
-      let mealPlanId: string;
-      if (mealPlansQuery[0] && mealPlansQuery[0].length > 0) {
-        const existingMealPlan = mealPlansQuery[0][0];
-        mealPlanId = existingMealPlan.id || uuidv4();
-      } else {
-        // Create a new meal plan
-        const newMealPlan = {
-          id: uuidv4(),
-          name: "My Meal Plan",
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-        };
-        z.mutate.mealPlans.insert(newMealPlan);
-        mealPlanId = newMealPlan.id;
+      // Get the existing meal plan (assumes one exists due to initialization)
+      const existingMealPlan = mealPlansQuery[0]?.[0];
+      if (!existingMealPlan?.id) {
+        console.error("No meal plan found. Please refresh the page.");
+        return;
       }
 
       const newMeal = {
         id: uuidv4(),
-        mealPlanId,
+        mealPlanId: existingMealPlan.id,
         dayOfWeek: day as DayOfWeek,
         mealType: type as MealType,
         notes,
