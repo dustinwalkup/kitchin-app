@@ -1,11 +1,11 @@
-import { useMemo, useState } from "react";
-import { useZero, useQuery } from "@rocicorp/zero/react";
+import { useState } from "react";
 import { Coffee, Sun, Moon } from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
 
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import type { Schema } from "../../zero-schema.gen";
+import { useMealPlanId } from "@/hooks/use-meal-plan-id";
+import { useMeals } from "@/hooks/use-meals";
+import { useMutations } from "@/hooks/use-mutations";
 
 type MealType = "breakfast" | "lunch" | "dinner";
 type DayOfWeek =
@@ -90,81 +90,26 @@ const mealTypes = [
 // ];
 
 export function MealPlanner() {
-  const z = useZero<Schema>();
-  const mealsQuery = useQuery(z.query.meals);
-  const mealPlansQuery = useQuery(z.query.mealPlans);
+  const mealPlanId = useMealPlanId();
+  const { meals, rawMeals } = useMeals(mealPlanId || undefined);
+  const { updateMeal, createMeal } = useMutations();
 
   const [viewMode] = useState<"week" | "day">("week");
-  // const [selectedDay, setSelectedDay] = useState("monday");
-  // const [selectedMeal, setSelectedMeal] = useState("breakfast");
-  // const [quickAdd, setQuickAdd] = useState("");
-  // const [quickCategory, setQuickCategory] = useState("produce");
-  // const [meals, setMeals] = useState({
-  //   monday: { breakfast: "", lunch: "", dinner: "" },
-  //   tuesday: { breakfast: "", lunch: "", dinner: "" },
-  //   wednesday: { breakfast: "", lunch: "", dinner: "" },
-  //   thursday: { breakfast: "", lunch: "", dinner: "" },
-  //   friday: { breakfast: "", lunch: "", dinner: "" },
-  //   saturday: { breakfast: "", lunch: "", dinner: "" },
-  //   sunday: { breakfast: "", lunch: "", dinner: "" },
-  // });
-  // const [groceryItems, setGroceryItems] = useState({
-  //   produce: [],
-  //   meat: [],
-  //   dairy: [],
-  //   pantry: [],
-  //   frozen: [],
-  //   bakery: [],
-  //   other: [],
-  // });
-
-  type MealsMap = Record<DayOfWeek, Record<MealType, string>>;
-
-  const meals = useMemo<MealsMap>(() => {
-    const map = {
-      monday: { breakfast: "", lunch: "", dinner: "" },
-      tuesday: { breakfast: "", lunch: "", dinner: "" },
-      wednesday: { breakfast: "", lunch: "", dinner: "" },
-      thursday: { breakfast: "", lunch: "", dinner: "" },
-      friday: { breakfast: "", lunch: "", dinner: "" },
-      saturday: { breakfast: "", lunch: "", dinner: "" },
-      sunday: { breakfast: "", lunch: "", dinner: "" },
-    };
-
-    for (const meal of mealsQuery[0] || []) {
-      const day = meal.dayOfWeek as DayOfWeek;
-      const type = meal.mealType as MealType;
-      map[day][type] = meal.notes ?? "";
-    }
-
-    return map;
-  }, [mealsQuery]);
 
   const handleMealChange = (day: string, type: string, notes: string) => {
-    const existingMeal = mealsQuery[0]?.find(
+    const existingMeal = rawMeals.find(
       (m) => m.dayOfWeek === day && m.mealType === type,
     );
 
     if (existingMeal) {
-      z.mutate.meals.update({ id: existingMeal.id, notes });
+      updateMeal(existingMeal.id!, notes);
     } else {
-      // Get the existing meal plan (assumes one exists due to initialization)
-      const existingMealPlan = mealPlansQuery[0]?.[0];
-      if (!existingMealPlan?.id) {
+      if (!mealPlanId) {
         console.error("No meal plan found. Please refresh the page.");
         return;
       }
 
-      const newMeal = {
-        id: uuidv4(),
-        mealPlanId: existingMealPlan.id,
-        dayOfWeek: day as DayOfWeek,
-        mealType: type as MealType,
-        notes,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      };
-      z.mutate.meals.insert(newMeal);
+      createMeal(mealPlanId, day as DayOfWeek, type as MealType, notes);
     }
   };
 
@@ -290,7 +235,7 @@ export function MealPlanner() {
           {days.map((day) => (
             <div
               key={day.key}
-              className={`rounded-xl border-l-4 bg-white ${day.color} border-secondary/20 border-t border-r border-b p-4 sm:p-6`}
+              className={`rounded-xl border-l-4 bg-white ${day.color} border-secondary/20 border-b border-r border-t p-4 sm:p-6`}
             >
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-night-horizon text-lg font-semibold">

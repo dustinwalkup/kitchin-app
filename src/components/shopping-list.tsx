@@ -1,14 +1,14 @@
-import { useState, useMemo } from "react";
-import { useZero, useQuery } from "@rocicorp/zero/react";
-import {} from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
+import { useState } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Icon } from "./ui/icon";
-import type { Schema } from "../../zero-schema.gen";
+
+import { useShoppingListId } from "@/hooks/use-shopping-list-id";
+import { useShoppingListItems } from "@/hooks/use-shopping-list-items";
+import { useMutations } from "@/hooks/use-mutations";
 
 type CategoryKey =
   | "produce"
@@ -82,147 +82,66 @@ const commonItems = {
 };
 
 export function ShoppingList() {
-  const z = useZero<Schema>();
-  const shoppingListsQuery = useQuery(z.query.shoppingLists);
-  const shoppingListItemsQuery = useQuery(z.query.shoppingListItems);
+  const shoppingListId = useShoppingListId();
+  const {
+    itemsByCategory: groceryItems,
+    totalItems,
+    completedItems,
+  } = useShoppingListItems(shoppingListId || undefined);
+  const {
+    createShoppingListItem,
+    toggleShoppingListItem,
+    deleteShoppingListItem,
+    updateShoppingListItem,
+  } = useMutations();
 
   const [viewMode, setViewMode] = useState<"all" | "category">("all");
   const [activeCategory, setActiveCategory] = useState("produce");
   const [newItems, setNewItems] = useState<Record<string, string>>({});
 
-  // Get the active shopping list (assumes one exists due to initialization)
-  const activeShoppingList = useMemo(() => {
-    const lists = shoppingListsQuery[0] || [];
-    return lists.find((list) => list.isActive) || lists[0];
-  }, [shoppingListsQuery]);
-
-  // Group shopping list items by category
-  const groceryItems = useMemo(() => {
-    const items = shoppingListItemsQuery[0] || [];
-    const itemsByCategory: Record<
-      string,
-      Array<{
-        id: string;
-        name: string;
-        completed: boolean;
-        quantity: string;
-        unit: string | null;
-        notes: string | null;
-      }>
-    > = {
-      produce: [],
-      meat: [],
-      dairy: [],
-      pantry: [],
-      frozen: [],
-      bakery: [],
-      other: [],
-    };
-
-    if (activeShoppingList) {
-      const listItems = items.filter(
-        (item) => item.shoppingListId === activeShoppingList.id,
-      );
-
-      for (const item of listItems) {
-        const category = item.category as keyof typeof itemsByCategory;
-        if (itemsByCategory[category]) {
-          itemsByCategory[category].push({
-            id: item.id!,
-            name: item.name,
-            completed: item.isCompleted || false,
-            quantity: item.quantity || "1",
-            unit: item.unit,
-            notes: item.notes,
-          });
-        }
-      }
-    }
-
-    return itemsByCategory;
-  }, [shoppingListItemsQuery, activeShoppingList]);
-
   const addItem = (category: CategoryKey) => {
     const itemName = newItems[category]?.trim();
-    if (itemName && activeShoppingList?.id) {
-      const newItem = {
-        id: uuidv4(),
-        shoppingListId: activeShoppingList.id,
-        category: category,
-        name: itemName,
-        quantity: "1",
-        isCompleted: false,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      };
-      z.mutate.shoppingListItems.insert(newItem);
+    if (itemName && shoppingListId) {
+      createShoppingListItem(shoppingListId, category, itemName);
       setNewItems((prev) => ({ ...prev, [category]: "" }));
     }
   };
 
   const addCommonItem = (category: CategoryKey, itemName: string) => {
-    if (!activeShoppingList?.id) return;
+    if (!shoppingListId) return;
 
     const exists = groceryItems[category]?.some(
       (item) => item.name.toLowerCase() === itemName.toLowerCase(),
     );
 
     if (!exists) {
-      const newItem = {
-        id: uuidv4(),
-        shoppingListId: activeShoppingList.id,
-        category: category,
-        name: itemName,
-        quantity: "1",
-        isCompleted: false,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      };
-      z.mutate.shoppingListItems.insert(newItem);
+      createShoppingListItem(shoppingListId, category, itemName);
     }
   };
 
   const toggleItem = (category: string, itemId: string) => {
-    const item = shoppingListItemsQuery[0]?.find((i) => i.id === itemId);
+    const item = groceryItems[category as CategoryKey]?.find(
+      (i) => i.id === itemId,
+    );
     if (item) {
-      z.mutate.shoppingListItems.update({
-        id: itemId,
-        isCompleted: !item.isCompleted,
-        completedAt: !item.isCompleted ? Date.now() : null,
-        updatedAt: Date.now(),
-      });
+      toggleShoppingListItem(itemId, !item.completed);
     }
   };
 
-  const removeItem = (category: string, itemId: string) => {
-    z.mutate.shoppingListItems.delete({ id: itemId });
+  const removeItem = (category: CategoryKey, itemId: string) => {
+    deleteShoppingListItem(itemId);
   };
 
   const updateQuantity = (
-    category: string,
+    category: CategoryKey,
     itemId: string,
     quantity: string,
   ) => {
-    z.mutate.shoppingListItems.update({
-      id: itemId,
-      quantity,
-      updatedAt: Date.now(),
-    });
+    updateShoppingListItem(itemId, { quantity });
   };
 
-  const getTotalItems = () => {
-    return Object.values(groceryItems).reduce(
-      (total, items) => total + items.length,
-      0,
-    );
-  };
-
-  const getCompletedItems = () => {
-    return Object.values(groceryItems).reduce(
-      (total, items) => total + items.filter((item) => item.completed).length,
-      0,
-    );
-  };
+  const getTotalItems = () => totalItems;
+  const getCompletedItems = () => completedItems;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -305,13 +224,15 @@ export function ShoppingList() {
                       {category.label}
                     </h3>
                     <p className="text-night-horizon/60 text-sm">
-                      {groceryItems[category.key]?.length || 0} items
+                      {groceryItems[category.key as CategoryKey]?.length || 0}{" "}
+                      items
                     </p>
                   </div>
                 </div>
                 <Badge className={`${category.color} rounded-full px-3 py-1`}>
-                  {groceryItems[category.key]?.filter((item) => !item.completed)
-                    .length || 0}{" "}
+                  {groceryItems[category.key as CategoryKey]?.filter(
+                    (item) => !item.completed,
+                  ).length || 0}{" "}
                   left
                 </Badge>
               </div>
@@ -348,7 +269,9 @@ export function ShoppingList() {
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {commonItems[category.key as CategoryKey]?.map((item) => {
-                    const exists = groceryItems[category.key]?.some(
+                    const exists = groceryItems[
+                      category.key as CategoryKey
+                    ]?.some(
                       (groceryItem) =>
                         groceryItem.name.toLowerCase() === item.toLowerCase(),
                     );
@@ -373,7 +296,7 @@ export function ShoppingList() {
 
               {/* Items */}
               <div className="space-y-2">
-                {groceryItems[category.key]?.map((item) => (
+                {groceryItems[category.key as CategoryKey]?.map((item) => (
                   <div
                     key={item.id}
                     className={`flex items-center gap-3 rounded-lg border p-3 transition-all ${
@@ -384,7 +307,9 @@ export function ShoppingList() {
                   >
                     <Checkbox
                       checked={item.completed}
-                      onCheckedChange={() => toggleItem(category.key, item.id)}
+                      onCheckedChange={() =>
+                        toggleItem(category.key as CategoryKey, item.id)
+                      }
                     />
                     <span
                       className={`flex-1 ${item.completed ? "text-gray-500 line-through" : ""}`}
@@ -394,14 +319,20 @@ export function ShoppingList() {
                     <Input
                       value={item.quantity}
                       onChange={(e) =>
-                        updateQuantity(category.key, item.id, e.target.value)
+                        updateQuantity(
+                          category.key as CategoryKey,
+                          item.id,
+                          e.target.value,
+                        )
                       }
                       className="border-tertiary/30 h-7 w-12 text-center text-xs"
                     />
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => removeItem(category.key, item.id)}
+                      onClick={() =>
+                        removeItem(category.key as CategoryKey, item.id)
+                      }
                       className="text-accent hover:text-accent/80 hover:bg-accent/10 h-7 w-7 p-0"
                     >
                       <Icon name="Trash2" className="h-3 w-3" />
@@ -409,8 +340,8 @@ export function ShoppingList() {
                   </div>
                 ))}
 
-                {(!groceryItems[category.key] ||
-                  groceryItems[category.key].length === 0) && (
+                {(!groceryItems[category.key as CategoryKey] ||
+                  groceryItems[category.key as CategoryKey].length === 0) && (
                   <div className="py-6 text-center text-gray-400">
                     <p className="text-sm">No items yet</p>
                   </div>
@@ -439,9 +370,9 @@ export function ShoppingList() {
                 >
                   <span>{category.emoji}</span>
                   <span className="hidden sm:inline">{category.label}</span>
-                  {groceryItems[category.key]?.length > 0 && (
+                  {groceryItems[category.key as CategoryKey]?.length > 0 && (
                     <Badge variant="secondary" className="ml-1 text-xs">
-                      {groceryItems[category.key].length}
+                      {groceryItems[category.key as CategoryKey].length}
                     </Badge>
                   )}
                 </button>
@@ -461,7 +392,8 @@ export function ShoppingList() {
                       {category?.label}
                     </h3>
                     <p className="text-night-horizon/60 text-sm">
-                      {groceryItems[activeCategory]?.length || 0} items
+                      {groceryItems[activeCategory as CategoryKey]?.length || 0}{" "}
+                      items
                     </p>
                   </div>
                 </div>
@@ -498,7 +430,9 @@ export function ShoppingList() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {commonItems[activeCategory as CategoryKey]?.map((item) => {
-                      const exists = groceryItems[activeCategory]?.some(
+                      const exists = groceryItems[
+                        activeCategory as CategoryKey
+                      ]?.some(
                         (groceryItem) =>
                           groceryItem.name.toLowerCase() === item.toLowerCase(),
                       );
@@ -523,7 +457,7 @@ export function ShoppingList() {
 
                 {/* Items List */}
                 <div className="space-y-3">
-                  {groceryItems[activeCategory]?.map((item) => (
+                  {groceryItems[activeCategory as CategoryKey]?.map((item) => (
                     <div
                       key={item.id}
                       className={`flex items-center gap-4 rounded-lg border p-4 transition-all ${
@@ -535,7 +469,7 @@ export function ShoppingList() {
                       <Checkbox
                         checked={item.completed}
                         onCheckedChange={() =>
-                          toggleItem(activeCategory, item.id)
+                          toggleItem(activeCategory as CategoryKey, item.id)
                         }
                         className="h-5 w-5"
                       />
@@ -548,7 +482,7 @@ export function ShoppingList() {
                         value={item.quantity}
                         onChange={(e) =>
                           updateQuantity(
-                            activeCategory,
+                            activeCategory as CategoryKey,
                             item.id,
                             e.target.value,
                           )
@@ -558,7 +492,9 @@ export function ShoppingList() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeItem(activeCategory, item.id)}
+                        onClick={() =>
+                          removeItem(activeCategory as CategoryKey, item.id)
+                        }
                         className="text-accent hover:text-accent/80 hover:bg-accent/10 h-9 w-9 p-0"
                       >
                         <Icon name="Trash2" className="h-4 w-4" />
@@ -566,8 +502,9 @@ export function ShoppingList() {
                     </div>
                   ))}
 
-                  {(!groceryItems[activeCategory] ||
-                    groceryItems[activeCategory].length === 0) && (
+                  {(!groceryItems[activeCategory as CategoryKey] ||
+                    groceryItems[activeCategory as CategoryKey].length ===
+                      0) && (
                     <div className="py-12 text-center text-gray-400">
                       <Icon
                         name="ShoppingCart"
