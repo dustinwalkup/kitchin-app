@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Icon } from "@/components/ui/icon";
 import type { Schema } from "../../zero-schema.gen";
 
 type MealType = "breakfast" | "lunch" | "dinner";
@@ -92,6 +93,7 @@ const mealTypes = [
 export function MealPlanner() {
   const z = useZero<Schema>();
   const mealsQuery = useQuery(z.query.meals);
+  const mealPlansQuery = useQuery(z.query.mealPlans);
 
   const [viewMode] = useState<"week" | "day">("week");
   // const [selectedDay, setSelectedDay] = useState("monday");
@@ -147,9 +149,16 @@ export function MealPlanner() {
     if (existingMeal) {
       z.mutate.meals.update({ id: existingMeal.id, notes });
     } else {
+      // Get the existing meal plan (should exist due to initialization)
+      const existingMealPlan = mealPlansQuery[0]?.[0];
+      if (!existingMealPlan?.id) {
+        console.error("No meal plan found. Please refresh the page.");
+        return;
+      }
+
       const newMeal = {
         id: uuidv4(),
-        mealPlanId: mealsQuery[0][0].mealPlanId,
+        mealPlanId: existingMealPlan.id,
         dayOfWeek: day as DayOfWeek,
         mealType: type as MealType,
         notes,
@@ -188,6 +197,26 @@ export function MealPlanner() {
   //     setQuickAdd("");
   //   }
   // };
+
+  // Don't render until we have a meal plan
+  if (!mealPlansQuery[0] || mealPlansQuery[0].length === 0) {
+    return (
+      <div className="space-y-4 sm:space-y-6">
+        <div className="border-tertiary/20 rounded-xl border bg-white p-8 text-center">
+          <Icon
+            name="Calendar"
+            className="mx-auto mb-4 h-12 w-12 text-gray-400"
+          />
+          <h2 className="text-night-horizon mb-2 text-lg font-semibold">
+            Loading Meal Plan...
+          </h2>
+          <p className="text-night-horizon/60 text-sm">
+            Please wait while we set up your meal plan.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">

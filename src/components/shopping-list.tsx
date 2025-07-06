@@ -90,7 +90,7 @@ export function ShoppingList() {
   const [activeCategory, setActiveCategory] = useState("produce");
   const [newItems, setNewItems] = useState<Record<string, string>>({});
 
-  // Get the active shopping list (assumes one exists)
+  // Get the active shopping list (should exist due to initialization)
   const activeShoppingList = useMemo(() => {
     const lists = shoppingListsQuery[0] || [];
     return lists.find((list) => list.isActive) || lists[0];
@@ -224,7 +224,7 @@ export function ShoppingList() {
     );
   };
 
-  // Show message if no shopping list exists
+  // Don't render until we have a shopping list
   if (!activeShoppingList) {
     return (
       <div className="space-y-4 sm:space-y-6">
@@ -234,10 +234,10 @@ export function ShoppingList() {
             className="mx-auto mb-4 h-12 w-12 text-gray-400"
           />
           <h2 className="text-night-horizon mb-2 text-lg font-semibold">
-            No Shopping List Found
+            Loading Shopping List...
           </h2>
           <p className="text-night-horizon/60 text-sm">
-            Please create a shopping list first to get started.
+            Please wait while we set up your shopping list.
           </p>
         </div>
       </div>

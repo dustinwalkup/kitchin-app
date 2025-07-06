@@ -3,6 +3,7 @@ import { MealPlanner } from "./components/meal-planner";
 import { ShoppingList } from "./components/shopping-list";
 import { Icon } from "./components/ui/icon";
 import { cn } from "./lib/utils";
+// import { useInitializeData } from "./hooks/use-initialize-data";
 
 const DEFAULT_TAB = "meals";
 
@@ -26,6 +27,9 @@ const TABS = [
 ];
 
 export default function App() {
+  // Initialize default data for new users
+  // useInitializeData();
+
   return (
     <main className="bg-pueblo-sand/30">
       <Tabs
