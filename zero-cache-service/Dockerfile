@@ -5,6 +5,6 @@ EXPOSE 80
 
 # Add a simple health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:4848/keepalive || exit 1
+  CMD curl -f http://localhost:80/keepalive || exit 1
 
 CMD ["zero-cache"]
