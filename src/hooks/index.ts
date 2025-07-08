@@ -9,5 +9,8 @@ export { useShoppingListId } from "./use-shopping-list-id";
 // Mutation hooks
 export { useMutations } from "./use-mutations";
 
+// Preferences hooks
+export { useShoppingListPreferences } from "./use-shopping-list-preferences";
+
 // Initialization hooks
 export { useInitializeData } from "./use-initialize-data";

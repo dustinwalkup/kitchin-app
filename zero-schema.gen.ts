@@ -421,6 +421,26 @@ export const schema = {
           >,
           serverName: "is_active",
         },
+        viewMode: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingLists",
+            "viewMode"
+          >,
+          serverName: "view_mode",
+        },
+        activeCategory: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "shoppingLists",
+            "activeCategory"
+          >,
+          serverName: "active_category",
+        },
         estimatedBudget: {
           type: "number",
           optional: true,

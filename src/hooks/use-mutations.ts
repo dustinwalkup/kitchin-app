@@ -98,6 +98,8 @@ export function useMutations() {
       id: uuidv4(),
       name,
       isActive: true,
+      viewMode: "list" as const,
+      activeCategory: "produce" as const,
       mealPlanId,
       estimatedBudget: null,
       actualCost: null,
@@ -107,6 +109,24 @@ export function useMutations() {
     };
     z.mutate.shoppingLists.insert(newShoppingList);
     return newShoppingList;
+  };
+
+  const updateShoppingList = (
+    shoppingListId: string,
+    updates: Partial<{
+      name: string;
+      viewMode: "list" | "category";
+      activeCategory: CategoryKey;
+      estimatedBudget: number;
+      actualCost: number;
+      completedAt: number | null;
+    }>,
+  ) => {
+    z.mutate.shoppingLists.update({
+      id: shoppingListId,
+      ...updates,
+      updatedAt: Date.now(),
+    });
   };
 
   return {
@@ -123,5 +143,6 @@ export function useMutations() {
     // Plan operations
     createMealPlan,
     createShoppingList,
+    updateShoppingList,
   };
 }

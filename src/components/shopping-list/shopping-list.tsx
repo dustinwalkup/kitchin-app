@@ -1,9 +1,13 @@
 import { useState } from "react";
 
-import { useShoppingListItems } from "@/hooks/use-shopping-list-items";
+import {
+  useShoppingListId,
+  useShoppingListItems,
+  useShoppingListPreferences,
+} from "@/hooks";
 
 import { CATEGORIES, LABELS } from "@/lib/constants";
-import { type CategoryKey, type ShoppingListViewMode } from "@/lib/types";
+import { type CategoryKey } from "@/lib/types";
 
 import { ShoppingListHeader } from "./shopping-list-header";
 import { ShoppingListCategory } from "./shopping-list-category";
@@ -14,18 +18,16 @@ import { ShoppingListItemComponent } from "./shopping-list-item";
 import { EmptyState } from "./empty-state";
 
 export function ShoppingList() {
+  const shoppingListId = useShoppingListId() || "";
   const {
     itemsByCategory: groceryItems,
     totalItems,
     completedItems,
-    items,
   } = useShoppingListItems();
 
-  // Get shopping list ID from the first item (since there's only one shopping list)
-  const shoppingListId = items[0]?.shoppingListId;
+  const { viewMode, activeCategory, updateViewMode, updateActiveCategory } =
+    useShoppingListPreferences();
 
-  const [viewMode, setViewMode] = useState<ShoppingListViewMode>("list");
-  const [activeCategory, setActiveCategory] = useState<CategoryKey>("produce");
   const [newItems, setNewItems] = useState<Record<CategoryKey, string>>(
     {} as Record<CategoryKey, string>,
   );
@@ -63,7 +65,7 @@ export function ShoppingList() {
         <ShoppingListCategoryTabs
           activeCategory={activeCategory}
           itemsByCategory={groceryItems}
-          onCategoryChange={setActiveCategory}
+          onCategoryChange={updateActiveCategory}
         />
 
         <div className="border-tertiary/20 rounded-xl border bg-white p-4 sm:p-6">
@@ -124,7 +126,7 @@ export function ShoppingList() {
         completedItems={completedItems}
         totalItems={totalItems}
         viewMode={viewMode}
-        onViewModeChange={setViewMode}
+        onViewModeChange={updateViewMode}
       />
 
       {viewMode === "list" ? renderListView() : renderCategoryView()}

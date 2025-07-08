@@ -17,6 +17,7 @@ type MealsMap = Record<DayOfWeek, Record<MealType, string>>;
 export function useMeals() {
   const z = useZero<Schema>();
   const mealsQuery = useQuery(z.query.meals);
+  const mealPlansQuery = useQuery(z.query.mealPlans);
 
   const meals = useMemo<MealsMap>(() => {
     const map = {
@@ -47,5 +48,6 @@ export function useMeals() {
   return {
     meals,
     rawMeals,
+    mealPlan: mealPlansQuery[0],
   };
 }

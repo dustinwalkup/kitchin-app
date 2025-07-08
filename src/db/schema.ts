@@ -33,6 +33,7 @@ export const groceryCategoryEnum = pgEnum("grocery_category", [
   "bakery",
   "other",
 ]);
+export const viewModeEnum = pgEnum("view_mode", ["list", "category"]);
 
 // Meal plans table (weekly meal plans)
 export const mealPlans = pgTable("meal_plans", {
@@ -63,6 +64,10 @@ export const shoppingLists = pgTable("shopping_lists", {
   }),
   name: varchar("name", { length: 255 }).default("Shopping List"),
   isActive: boolean("is_active").default(true).notNull(),
+  viewMode: viewModeEnum("view_mode").default("list").notNull(),
+  activeCategory: groceryCategoryEnum("active_category")
+    .default("produce")
+    .notNull(),
   estimatedBudget: integer("estimated_budget"), // in cents
   actualCost: integer("actual_cost"), // in cents
   completedAt: timestamp("completed_at"),
