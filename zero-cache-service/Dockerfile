@@ -1,4 +1,4 @@
-FROM rocicorp/zero:0.21.2025062401
+FROM rocicorp/zero:0.22.2025070600
 
 RUN mkdir -p /data
 EXPOSE 80
