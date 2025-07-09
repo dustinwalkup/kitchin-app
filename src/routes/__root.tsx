@@ -17,6 +17,8 @@ function RootComponent() {
   // Initialize default data if needed
   // useInitializeData();
 
+  console.log("process.env.NODE_ENV", process.env.NODE_ENV);
+
   return (
     <div>
       <Navbar />
@@ -57,7 +59,8 @@ function RootComponent() {
           <Outlet />
         </div>
       </main>
-      <TanStackRouterDevtools />
+      {/* Only show DevTools in development */}
+      {process.env.NODE_ENV === "development" && <TanStackRouterDevtools />}
     </div>
   );
 }
