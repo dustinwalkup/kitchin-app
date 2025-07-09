@@ -1,23 +1,15 @@
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { Link } from "@tanstack/react-router";
-import { Zero } from "@rocicorp/zero";
-
-import type { Schema } from "../../zero-schema.gen";
 import { LABELS } from "@/lib/constants";
 import { Icon } from "@/components/ui/icon";
 import Navbar from "@/components/navbar";
+import type { RouterContext } from "@/lib/router";
 // import { useInitializeData } from "@/hooks";
-
-interface RouterContext {
-  zero: Zero<Schema>;
-}
 
 function RootComponent() {
   // Initialize default data if needed
   // useInitializeData();
-
-  console.log("process.env.NODE_ENV", process.env.NODE_ENV);
 
   return (
     <div>
