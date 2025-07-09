@@ -42,9 +42,10 @@ src/
 ## 🛠️ Tech Stack
 
 - **Local-First Engine**: [Zero by Rocicorp](https://zero.rocicorp.dev/)
-- **Frontend**: React 19 + TypeScript + Vite
+- **Frontend**: React 19 + TypeScript + Vite (deployed on [Vercel](https://vercel.com/))
 - **Routing**: TanStack Router with strategic preloading
-- **Database**: PostgreSQL with Drizzle ORM
+- **Database**: PostgreSQL with Drizzle ORM (hosted on [Neon](https://neon.tech/))
+- **Zero Cache Server**: Deployed on [Railway](https://railway.app/)
 - **Styling**: Tailwind CSS
 - **UI Components**: Radix UI
 
