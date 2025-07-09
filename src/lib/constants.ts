@@ -228,7 +228,9 @@ export const LABELS = {
   // App-wide labels
   APP_NAME: "Kitchin",
   MEAL_PLANNING: "Meal Planning",
+  MEALS: "Meals",
   SHOPPING_LIST: "Shopping List",
+  SHOPPING: "Shopping",
 
   // Common UI labels
   QUICK_ADD: "Quick add:",
