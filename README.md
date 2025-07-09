@@ -13,6 +13,8 @@ A **Zero-powered** React application demonstrating local-first architecture for 
 - **🔗 Partial Sync**: Only syncs data you need, scales to millions of rows
 - **🛡️ Optimistic Updates**: UI updates instantly while syncing in background
 
+> **Note**: Zero is currently in Alpha. This project showcases its cutting-edge capabilities as the technology continues to evolve.
+
 ## ✨ Current Features
 
 - **🍽️ Meal Planning**: Plan meals for each day of the week with instant updates
